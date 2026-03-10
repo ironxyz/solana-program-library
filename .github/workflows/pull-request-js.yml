@@ -4,15 +4,8 @@ on:
   pull_request:
     paths:
       - 'account-compression/sdk/**'
-      - 'libraries/type-length-value/js/**'
-      - 'memo/js/**'
       - 'name-service/js/**'
-      - 'single-pool/js/**'
-      - 'stake-pool/js/**'
-      - 'token/js/**'
-      - 'token-group/js/**'
       - 'token-lending/js/**'
-      - 'token-metadata/js/**'
       - 'token-swap/js/**'
       - 'pnpm-lock.yaml'
       - '.github/workflows/pull-request-js.yml'
@@ -20,14 +13,7 @@ on:
     branches: [master]
     paths:
       - 'account-compression/sdk/**'
-      - 'libraries/type-length-value/js/**'
-      - 'memo/js/**'
-      - 'single-pool/js/**'
-      - 'stake-pool/js/**'
-      - 'token/js/**'
-      - 'token-group/js/**'
       - 'token-lending/js/**'
-      - 'token-metadata/js/**'
       - 'token-swap/js/**'
       - 'pnpm-lock.yaml'
       - '.github/workflows/pull-request-js.yml'
@@ -40,32 +26,26 @@ jobs:
   js-test:
     strategy:
       matrix:
+        node-version: [16.x, 18.x, 20.x]
         package:
           [
-            account-compression,
-            libraries,
-            memo,
             name-service,
-            single-pool,
-            stake-pool,
-            token,
-            token-group,
-            token-lending,
-            token-metadata,
             token-swap,
           ]
+        include:
+          # Restrict certain packages to supported Node.js versions.
+          - package: account-compression
+            node-version: 20.x
+          - package: token-lending
+            node-version: 18.5
     runs-on: ubuntu-latest
-    env:
-      NODE_VERSION: 20.5
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ env.NODE_VERSION }}
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
+          node-version: ${{ matrix.node-version }}
+      - uses: pnpm/action-setup@v4
       - uses: actions/cache@v4
         with:
           path: ~/.npm
