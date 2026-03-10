@@ -47,6 +47,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Remove unneeded packages for more space
+        run: bash ./ci/warning/purge-ubuntu-runner.sh
+
       - name: Set env vars
         run: |
           source ci/rust-version.sh
@@ -71,7 +74,7 @@ jobs:
         run: ./ci/install-build-deps.sh
 
       - name: Run clippy
-        run: ./cargo-nightly clippy -Zunstable-options --workspace --all-targets --features test-sbf -- --deny=warnings --deny=clippy::arithmetic_side_effects
+        run: ./cargo-nightly clippy -Zunstable-options --workspace --all-targets --all-features -- --deny=warnings --deny=clippy::arithmetic_side_effects
 
   audit:
     runs-on: ubuntu-latest
